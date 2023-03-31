@@ -1,13 +1,18 @@
 const express = require('express');
+const multer = require('multer');
+const { getFiles, uploadFile, deleteFile } = require('./controllers/controllers');
+const { connectToDatabase } = require('./models/models');
+
 const app = express();
-const filesRouter = require('./routes/fileRoutes');
+const upload = multer({ dest: 'uploads/' });
 
-app.use(express.json());
-app.use('/files', filesRouter);
+// Connect to database
+connectToDatabase();
 
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
-  });
-  
+// Define routes
+app.get('/files', getFiles);
+app.post('/upload', upload.single('file'), uploadFile);
+app.delete('/files/:id', deleteFile);
 
-module.exports = app;
+// Start server
+app.listen(3000, () => console.log('Server started on port 3000'));
